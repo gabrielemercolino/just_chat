@@ -9,12 +9,11 @@ import Config
 config :just_chat, JustChatWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  # http: [ip: {127, 0, 0, 1}, port: 4000],
-  http: [ip: {0, 0, 0, 0}, port: 4000],
+  http: [ip: {127, 0, 0, 1}],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
-  secret_key_base: "A5L+AclVqfmLyIPmj0+bQ6GmF0Ps+Jo6AYboh4hqBvl13H4IzSDeRA0+KrP8i2ma",
+  secret_key_base: "3GvDZ/x+OVMhroFItKLNNLK0E1RBY44DJBlYOfCixHJYVhSomOt07hHBV7NWGLGE",
   watchers: [
     esbuild: {Esbuild, :install_and_run, [:just_chat, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:just_chat, ~w(--watch)]}
@@ -43,13 +42,18 @@ config :just_chat, JustChatWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
-# Watch static and templates for browser reloading.
+# Reload browser tabs when matching files change.
 config :just_chat, JustChatWeb.Endpoint,
   live_reload: [
+    web_console_logger: true,
     patterns: [
-      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"priv/gettext/.*(po)$",
-      ~r"lib/just_chat_web/(controllers|live|components)/.*(ex|heex)$"
+      # Static assets, except user uploads
+      ~r"priv/static/(?!uploads/).*\.(js|css|png|jpeg|jpg|gif|svg)$",
+      # Gettext translations
+      ~r"priv/gettext/.*\.po$",
+      # Router, Controllers, LiveViews and LiveComponents
+      ~r"lib/just_chat_web/router\.ex$",
+      ~r"lib/just_chat_web/(controllers|live|components)/.*\.(ex|heex)$"
     ]
   ]
 
@@ -57,7 +61,7 @@ config :just_chat, JustChatWeb.Endpoint,
 config :just_chat, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
-config :logger, :console, format: "[$level] $message\n"
+config :logger, :default_formatter, format: "[$level] $message\n"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
@@ -67,10 +71,9 @@ config :phoenix, :stacktrace_depth, 20
 config :phoenix, :plug_init_mode, :runtime
 
 config :phoenix_live_view,
-  # Include HEEx debug annotations as HTML comments in rendered markup
+  # Include debug annotations and locations in rendered markup.
+  # Changing this configuration will require mix clean and a full recompile.
   debug_heex_annotations: true,
+  debug_attributes: true,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false

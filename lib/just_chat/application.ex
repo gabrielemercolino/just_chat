@@ -8,14 +8,8 @@ defmodule JustChat.Application do
   @impl true
   def start(_type, _args) do
     children = [
-      JustChatWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:just_chat, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: JustChat.PubSub},
-      # Start the Finch HTTP client for sending emails
-      {Finch, name: JustChat.Finch},
-      # Start a worker by calling: JustChat.Worker.start_link(arg)
-      # {JustChat.Worker, arg},
-      # Start to serve requests, typically the last entry
       JustChatWeb.Endpoint
     ]
 
